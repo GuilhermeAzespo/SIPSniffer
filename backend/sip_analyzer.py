@@ -1,5 +1,6 @@
 import pyshark
 import os
+import asyncio
 
 def analyze_pcap(filepath: str):
     """
@@ -7,6 +8,10 @@ def analyze_pcap(filepath: str):
     due to NAT misconfigurations.
     """
     try:
+        # Create a new event loop for this thread to make pyshark happy
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        
         # Load PCAP and filter for SIP
         cap = pyshark.FileCapture(filepath, display_filter="sip")
         
