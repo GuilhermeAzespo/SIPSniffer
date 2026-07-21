@@ -70,16 +70,25 @@ O Easypanel detectará automaticamente o `Dockerfile` presente na raiz do projet
 
 ---
 
-## 🔐 Como acessar (Primeiro Login)
+## 🔐 Como criar o primeiro usuário
 
-Por segurança, a aplicação não vem com usuários padrão. Para criar o seu primeiro usuário:
+Por segurança, o SIPSniffer não permite a criação de contas pela interface web (evitando que intrusos criem contas caso a ferramenta fique exposta na internet).
 
-1. Acesse a tela inicial web do SIPSniffer.
-2. Clique em **"Criar conta"** logo abaixo do botão Entrar.
-3. Insira o usuário e senha desejados e clique em **Registrar**.
-4. O sistema fará o login automaticamente.
+Para criar o seu primeiro usuário (ou usuários adicionais), você deve usar a interface de linha de comando (CLI) executando o script dentro do container Docker.
 
-*(Em ambientes de produção severos, recomenda-se desativar ou proteger a rota de criação de usuários no arquivo `backend/main.py`).*
+Se estiver usando o **Easypanel**:
+1. Vá no Easypanel, abra a aba **Console** do seu serviço SIPSniffer.
+2. Digite o seguinte comando:
+   ```bash
+   python create_user.py admin sua_senha_aqui
+   ```
+3. O sistema retornará `Success: User 'admin' created successfully!`.
+4. Agora basta acessar a interface web e fazer o login com essas credenciais.
+
+Se estiver rodando com **Docker Compose puro** no terminal:
+```bash
+docker-compose exec sipsniffer python backend/create_user.py admin sua_senha_aqui
+```
 
 ---
 
