@@ -6,7 +6,6 @@ const loginContainer = document.getElementById('login-container');
 const dashboardContainer = document.getElementById('dashboard-container');
 const loginForm = document.getElementById('login-form');
 const loginError = document.getElementById('login-error');
-const showRegisterBtn = document.getElementById('show-register');
 const logoutBtn = document.getElementById('logout-btn');
 const welcomeMsg = document.getElementById('welcome-msg');
 const uploadArea = document.getElementById('upload-area');
@@ -22,20 +21,7 @@ if (token) {
     checkToken();
 }
 
-// Toggle Login / Register
-showRegisterBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    isRegistering = !isRegistering;
-    if (isRegistering) {
-        document.querySelector('.logo h2').innerText = 'Criar Conta';
-        document.querySelector('.btn-primary').innerText = 'Registrar';
-        showRegisterBtn.innerText = 'Já tenho conta';
-    } else {
-        document.querySelector('.logo h2').innerText = 'SIPSniffer';
-        document.querySelector('.btn-primary').innerText = 'Entrar';
-        showRegisterBtn.innerText = 'Criar conta';
-    }
-});
+
 
 // Login / Register Form Submit
 loginForm.addEventListener('submit', async (e) => {
@@ -49,22 +35,12 @@ loginForm.addEventListener('submit', async (e) => {
     btn.innerText = 'Aguarde...';
 
     try {
-        if (isRegistering) {
-            const res = await fetch(`${API_URL}/users/?username=${username}&password=${password}`, {
-                method: 'POST'
-            });
-            if (!res.ok) throw new Error('Usuário já existe ou erro no servidor');
-            
-            // Auto login after register
-            await login(username, password);
-        } else {
-            await login(username, password);
-        }
+        await login(username, password);
     } catch (err) {
         loginError.innerText = err.message;
     } finally {
         btn.disabled = false;
-        btn.innerText = isRegistering ? 'Registrar' : 'Entrar';
+        btn.innerText = 'Entrar';
     }
 });
 
