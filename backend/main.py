@@ -19,11 +19,11 @@ def init_db():
     db = database.SessionLocal()
     try:
         if db.query(models.User).count() == 0:
-            hashed_password = auth.get_password_hash("Gu1j0rge98!@!@")
-            new_user = models.User(username="Guilherme", hashed_password=hashed_password)
+            hashed_password = auth.get_password_hash("Admin")
+            new_user = models.User(username="Admin", hashed_password=hashed_password)
             db.add(new_user)
             db.commit()
-            print("Default user Guilherme created.")
+            print("Default user Admin created.")
     except Exception as e:
         print(f"Error creating default user: {e}")
     finally:
