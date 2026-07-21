@@ -60,7 +60,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
 
 
 @app.post("/analyze/")
-async def upload_and_analyze(file: UploadFile = File(...), current_user: models.User = Depends(auth.get_current_user)):
+def upload_and_analyze(file: UploadFile = File(...), current_user: models.User = Depends(auth.get_current_user)):
     if not file.filename.endswith(".pcap") and not file.filename.endswith(".pcapng"):
         raise HTTPException(status_code=400, detail="Invalid file type. Only .pcap or .pcapng are allowed.")
         
