@@ -41,18 +41,7 @@ def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(), db:
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
-@app.post("/users/")
-def create_user(username: str, password: str, db: Session = Depends(database.get_db)):
-    # Simple route to create a user (in production, secure this)
-    db_user = db.query(models.User).filter(models.User.username == username).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail="Username already registered")
-    hashed_password = auth.get_password_hash(password)
-    new_user = models.User(username=username, hashed_password=hashed_password)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return {"username": new_user.username}
+
 
 @app.post("/analyze/")
 async def upload_and_analyze(file: UploadFile = File(...), current_user: models.User = Depends(auth.get_current_user)):
