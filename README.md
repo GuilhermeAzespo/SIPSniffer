@@ -1,105 +1,48 @@
-# SIPSniffer 🚀
+# SIPSniffer 📞
+**Diagnóstico Automático de Anomalias SIP**
 
-O **SIPSniffer** é uma aplicação completa (Frontend + Backend) desenvolvida para diagnosticar problemas complexos de protocolo SIP de forma automática, com foco em falhas de comunicação causadas por configurações erradas de NAT e problemas de envio/recebimento do pacote ACK.
-
-Através de uma interface web "Premium", basta fazer o upload de um arquivo `.pcap` ou `.pcapng` e o sistema analisará toda a árvore de pacotes para encontrar a causa raiz das chamadas mudas ou que caem em ~30 segundos.
-
----
-
-## 🏗 Estrutura do Projeto
-
-O projeto é monorepo, combinando o backend em Python (com FastAPI) e o frontend em HTML/JS puro para máxima performance e portabilidade, rodando perfeitamente dentro de um único container Docker.
-
-```
-SIPSniffer/
-│
-├── backend/                  # Código Fonte do Backend
-│   ├── auth.py               # Lógica de autenticação e tokens JWT
-│   ├── database.py           # Configuração do banco de dados SQLite (SQLAlchemy)
-│   ├── main.py               # Rotas da API e configuração do FastAPI
-│   ├── models.py             # Modelos de banco de dados (Tabela de Usuários)
-│   ├── requirements.txt      # Dependências do Python (pyshark, fastapi, etc)
-│   └── sip_analyzer.py       # O "Cérebro" que analisa os pacotes PCAP usando pyshark
-│
-├── frontend/                 # Código Fonte do Frontend (Vanilla JS + CSS Premium)
-│   ├── app.js                # Lógica de comunicação com a API (Upload, Login)
-│   ├── index.html            # Interface de usuário
-│   └── style.css             # Estilos Glassmorphism e Dark Mode
-│
-├── docker-compose.yml        # Configuração para rodar via Docker Compose
-└── Dockerfile                # Receita para criar o ambiente Linux + Tshark + Python
-```
+O SIPSniffer é uma aplicação web moderna projetada para analisar arquivos de captura de rede (`.pcap` ou `.pcapng`) e diagnosticar automaticamente problemas em fluxos de telefonia SIP. Ele cruza informações profundas do pacote (como IPs de origem/destino e cabeçalhos Contact) com o IP público da sua operadora para identificar configurações incorretas de NAT e falhas de comunicação bidirecional.
 
 ---
 
-## 🛠 Instalação Padrão (Docker)
+## 📂 Estrutura do Projeto
 
-A maneira mais fácil e garantida de rodar o SIPSniffer é via Docker, pois o sistema requer o `tshark` instalado no nível do sistema operacional (Linux). O Dockerfile já cuida de tudo.
+O projeto foi dividido em duas camadas principais que rodam de forma fluida no mesmo servidor:
 
-1. Clone o repositório:
-   ```bash
-   git clone https://github.com/GuilhermeAzespo/SIPSniffer.git
-   cd SIPSniffer
-   ```
-
-2. Suba os containers com Docker Compose:
-   ```bash
-   docker-compose up -d --build
-   ```
-
-3. Acesse no navegador:
-   Abra `http://localhost:8000`
-
-*(O banco de dados SQLite será criado automaticamente e salvo no seu host graças aos volumes mapeados no `docker-compose.yml`).*
+- `backend/`: O "motor" da aplicação. Feito em **Python** utilizando o framework **FastAPI**. Ele usa a biblioteca `pyshark` (um *wrapper* do tshark/Wireshark) para destrinchar os pacotes SIP. Também utiliza SQLite para salvar os usuários locais com senhas protegidas por criptografia forte (`bcrypt`).
+- `frontend/`: A interface do usuário. Construída com HTML puro, CSS e JavaScript sem dependências pesadas, adotando uma estética visual premium (Dark Mode e Glassmorphism) que impressiona no primeiro uso.
+- `Dockerfile`: Arquivo de orquestração que configura o ambiente Linux (Ubuntu/Debian) instalando o Python e a ferramenta de rede `tshark` em um container isolado.
 
 ---
 
-## ☁️ Instalação no Easypanel (Recomendado)
+## 🚀 Como instalar (Easypanel)
 
-Se você utiliza **Easypanel** em uma VPS (Ubuntu, Alma Linux, etc), o processo é 100% automatizado:
+O SIPSniffer foi desenhado para ser implantado ("Deploy") de forma quase 100% automatizada no **Easypanel** ou qualquer outro sistema de Docker, já que todo o código está neste repositório.
 
+### Passo a Passo no Easypanel:
 1. Acesse o painel do seu Easypanel.
-2. Crie um novo **Project** (ex: `Ferramentas`).
-3. Clique em **Create Service** e escolha a opção **App**.
-4. Na aba **Source**, conecte sua conta do GitHub e selecione o repositório `GuilhermeAzespo/SIPSniffer`.
-5. Vá na aba **Environment** e adicione a seguinte variável de ambiente (obrigatória para os tokens de login):
-   - `SECRET_KEY=sua_senha_super_secreta_aqui`
-6. Clique em **Deploy**.
+2. Crie um novo **Project** (Projeto) e dentro dele adicione um **Service** (Serviço) do tipo **App**.
+3. Na aba **Source** (Fonte), conecte a sua conta do GitHub e selecione este repositório: `GuilhermeAzespo/SIPSniffer`.
+4. O Easypanel lerá automaticamente o arquivo `Dockerfile` na raiz do projeto.
+5. Clique no botão **Deploy** (Implantar).
+6. Aguarde a bolinha ficar **Verde** (Running) indicando que a compilação terminou. 
+7. Vá na aba **Domains** para configurar a sua URL (ex: `sipsnifer.azespo.com.br`) e acessar a ferramenta.
 
-O Easypanel detectará automaticamente o `Dockerfile` presente na raiz do projeto, instalará as dependências do Ubuntu (como o `tshark`), configurará o Python e liberará o acesso web automaticamente através do proxy Traefik do Easypanel.
+### 🔑 Acesso Inicial (Administrador)
+Para facilitar o primeiro acesso, o servidor do SIPSniffer injeta automaticamente o usuário administrador padrão no banco de dados na primeira vez que liga. 
 
----
+Basta acessar o site implantado e usar:
+- **Usuário:** `Guilherme`
+- **Senha:** `Gu1j0rge98!@!@`
 
-## 🔐 Como criar o primeiro usuário
-
-Por segurança, o SIPSniffer não permite a criação de contas pela interface web (evitando que intrusos criem contas caso a ferramenta fique exposta na internet).
-
-Para criar o seu primeiro usuário (ou usuários adicionais), você deve usar a interface de linha de comando (CLI) executando o script dentro do container Docker.
-
-Se estiver usando o **Easypanel**:
-1. Vá no Easypanel, abra a aba **Console** do seu serviço SIPSniffer.
-2. O console abrirá direto na pasta do backend. Digite o seguinte comando (use aspas simples na senha se ela contiver caracteres especiais como `!`):
-   ```bash
-   python create_user.py "Guilherme" 'sua_senha_aqui'
-   ```
-3. O sistema retornará `Success: User 'Guilherme' created successfully!`.
-4. Agora basta acessar a interface web e fazer o login com essas credenciais.
-
-Se estiver rodando com **Docker Compose puro** no terminal do host:
-```bash
-docker-compose exec sipsniffer python create_user.py "Guilherme" 'sua_senha_aqui'
-```
+*(Lembre-se de não utilizar aspas ao digitar a senha na interface visual).*
 
 ---
 
-## 🧩 Como funciona o Motor de Análise
+## 🛠️ Como usar a ferramenta
 
-O arquivo `sip_analyzer.py` usa a biblioteca `pyshark` para ler o `.pcap` como se fosse o próprio Wireshark. O fluxo lógico é:
-
-1. Extrai todos os `INVITE`s e `200 OK`s, agrupando-os por `Call-ID`.
-2. Procura pelo pacote `ACK` correspondente de cada `Call-ID`.
-3. Se o PABX enviou múltiplos `200 OK` seguidos (retransmissão) e o sistema nunca detectou um `ACK`, ele gera um erro de **Falta de ACK (NAT/Routing)**.
-4. O sistema exibe o IP presente no cabeçalho `Contact` (do PABX) e o IP do `Request-URI` (da Operadora), ajudando você a identificar imediatamente se as regras de IP Público / Externo (NAT) no PABX ou no Firewall (ex: Fortigate) estão incorretas.
-
----
-Feito com ⚡ para facilitar a vida de engenheiros VoIP!
+1. Após fazer o Login na plataforma, você verá o Dashboard de Análise.
+2. No seu firewall (ex: Fortigate) ou PBX, exporte a captura de tráfego que está apresentando problemas de áudio mudo ou queda de ligação em formato `.pcap`.
+3. Arraste o arquivo para dentro da área tracejada na tela do SIPSniffer.
+4. O sistema irá vasculhar todas as sessões SIP contidas no pacote, lendo os metadados do `INVITE`, o cabeçalho `Contact` e medindo o número de `200 OK` retransmitidos.
+5. Se o sistema detectar que o IP exposto no PBX está mascarado pelo IP local da rede ou divergente da operadora, ele emitirá um alerta visual indicando exatamente onde a regra de NAT precisa ser ajustada no Fortigate!
