@@ -78,16 +78,16 @@ Para criar o seu primeiro usuário (ou usuários adicionais), você deve usar a 
 
 Se estiver usando o **Easypanel**:
 1. Vá no Easypanel, abra a aba **Console** do seu serviço SIPSniffer.
-2. Digite o seguinte comando:
+2. O console abrirá direto na pasta do backend. Digite o seguinte comando (use aspas simples na senha se ela contiver caracteres especiais como `!`):
    ```bash
-   python create_user.py admin sua_senha_aqui
+   python create_user.py "Guilherme" 'sua_senha_aqui'
    ```
-3. O sistema retornará `Success: User 'admin' created successfully!`.
+3. O sistema retornará `Success: User 'Guilherme' created successfully!`.
 4. Agora basta acessar a interface web e fazer o login com essas credenciais.
 
-Se estiver rodando com **Docker Compose puro** no terminal:
+Se estiver rodando com **Docker Compose puro** no terminal do host:
 ```bash
-docker-compose exec sipsniffer python backend/create_user.py admin sua_senha_aqui
+docker-compose exec sipsniffer python create_user.py "Guilherme" 'sua_senha_aqui'
 ```
 
 ---
