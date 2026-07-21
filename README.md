@@ -32,8 +32,8 @@ O SIPSniffer foi desenhado para ser implantado ("Deploy") de forma quase 100% au
 Para facilitar o primeiro acesso, o servidor do SIPSniffer injeta automaticamente o usuário administrador padrão no banco de dados na primeira vez que liga. 
 
 Basta acessar o site implantado e usar:
-- **Usuário:** `Guilherme`
-- **Senha:** `Gu1j0rge98!@!@`
+- **Usuário:** `Usuario`
+- **Senha:** `Senha`
 
 *(Lembre-se de não utilizar aspas ao digitar a senha na interface visual).*
 
