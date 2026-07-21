@@ -1,0 +1,13 @@
+version: "3.8"
+
+services:
+  sipsniffer:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/sipsniffer.db:/app/backend/sipsniffer.db
+      - ./backend/uploads:/app/backend/uploads
+    restart: unless-stopped
+    environment:
+      - SECRET_KEY=changeme12345
